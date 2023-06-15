@@ -2,6 +2,7 @@
 from typing import Protocol
 from multiprocessing import Process, Pipe
 from robomouse.worker import main
+from robomouse.utilities import WorkerData
 
 
 def disable_event():
@@ -29,6 +30,17 @@ class Presenter:
         self.model = model
         self.view = view
         self.worker_process = None
+        self.mouse_active = None
+        self.sent_data = WorkerData()
+        self.rcv_conn, self.send_conn = Pipe()
+
+    def copy_worker_data(self, settings):
+        """Copy settings data needed for worker"""
+        work_data = WorkerData(self.mouse_active,
+                               settings.timing_minutes,
+                               settings.movement_type)
+        print(f'work data to be sent to worker\n\t{work_data}')
+        return work_data
 
     def handle_exit_button(self):
         """Actions executed when close button is presed"""
@@ -54,16 +66,28 @@ class Presenter:
         self.view.update_settings(read_settings)
 
         # Presenter update sent to bkg process settings values
+        self.sent_data = self.copy_worker_data(read_settings)
+        print(f'Send data {self.sent_data}')
+        self.send_conn.send(self.sent_data)
 
+    def transfer_mouse_state(self, *args):
+        """copy mouse active from gui to self and sent data"""
+        self.mouse_active = args[0]
+        self.sent_data.active_state = args[0]
+        print(f'Send data {self.sent_data}')
+        self.send_conn.send(self.sent_data)
+        #TODO: delete
+        print(f'toggle {self.sent_data.active_state}')
 
     def run(self):
         """Run method of Presenter"""
         self.view.create_gui(self)
-            # set the pipe between App and Controller
-        rcv_conn, send_conn = Pipe()
-        self.worker_process = Process(target=main, args=(rcv_conn, ))
-        self.worker_process.start()
-
         # disable x close main window button
         self.view.protocol("WM_DELETE_WINDOW", disable_event)
+
+        # set the pipe between App and Controller
+
+        self.worker_process = Process(target=main, args=(self.rcv_conn, ))
+        self.worker_process.start()
+
         self.view.mainloop()

@@ -40,14 +40,14 @@ class SettingsStrings(Enum):
 @dataclass
 class SettingsElement:
     """Constains the setting values"""
-    timing_seconds: int = 60
+    timing_minutes: int = 1
     movement_type: Movement = Movement.MOVE_AND_CLICK
     color_enable: Color = Color.GREEN
     color_disable: Color = Color.GREY
 
     def __str__(self) -> str:
         """Override the str """
-        return f"Timing\t{self.timing_seconds}\n"\
+        return f"Timing\t{self.timing_minutes}\n"\
             f"Movement\t{self.movement_type}\n"\
             f"Active color\t{self.color_enable}\n"\
             f"Inactive color\t{self.color_disable}\n"

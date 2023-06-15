@@ -6,15 +6,14 @@ SETTINGS_FILE = "settings.bin"
 
 
 class Model:
-    """Model class which implements the settings object, reading and writing of the 
+    """Model class which implements the settings object, reading and writing of the
     settings using pickle format
     """
 
     def __init__(self):
-        """Load settings data from file if file found, 
+        """Load settings data from file if file found,
         else use default values implemented in dataclass
         """
-        #self.settings_values, self.__use_custom  = self.get_settings_obj()
 
     def get_settings_obj(self):
         """Retuns a settings obj based on the values read from file
@@ -47,9 +46,7 @@ class Model:
         return imported_settings
 
     def write_pickle_file(self, settings_obj):
-        """
-        Writes the actual settings in a bin file
-        """
+        """Writes the actual settings in a bin file """
         with open(SETTINGS_FILE, 'bw') as bin_file:
             pickle.dump(settings_obj, bin_file)
         print(f'data written to file:\n {settings_obj}')

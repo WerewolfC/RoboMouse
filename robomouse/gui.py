@@ -12,13 +12,6 @@ WINDOW_MAIN_TITLE = "Move it !"
 WINDOW_SETTINGS_SIZE = "280x200"
 WINDOW_SETTINGS_TITLE = "Settings"
 
-# target position
-TARGET_X = 0
-TARGET_Y = 500
-
-# other constants
-MINUTES_TO_SECONDS_FACTOR = 60
-
 
 class Presenter(Protocol):
     """Protocol implementation for Presenter"""
@@ -29,6 +22,9 @@ class Presenter(Protocol):
         ...
 
     def handle_exit_button(self):
+        ...
+
+    def transfer_mouse_state(self, mouse_active: MouseState):
         ...
 
 
@@ -138,6 +134,9 @@ class Gui(ttk.Window):
 
         self.update_status()
 
+        # trigger presenter to copy mouse_state data
+        self.presenter.transfer_mouse_state(self._mouse_state)
+
     @property
     def get_mouse_state(self):
         """Protected var getter """
@@ -189,7 +188,7 @@ class GuiSettings(ttk.Toplevel):
                                                                                         fill="both",
                                                                                         anchor="e")
         self.loop_value = tk.IntVar(master=frm_settings,
-                                    value=self._loaded_settings.timing_seconds / MINUTES_TO_SECONDS_FACTOR)
+                                    value=self._loaded_settings.timing_minutes)
         ttk.Label(master=frm_timing, textvariable=self.loop_value).pack(side="left",
                                                                         padx=10,
                                                                         anchor="e")
@@ -271,7 +270,7 @@ class GuiSettings(ttk.Toplevel):
 
     def callback_save_settings(self):
         """Sends the active settings to presenter """
-        active_settings = SettingsElement(self.loop_value.get() * MINUTES_TO_SECONDS_FACTOR,
+        active_settings = SettingsElement(self.loop_value.get(),
                                                 Movement(self.movement_value.get()),
                                                 Color(self.color_enable.get()),
                                                 Color(self.color_disable.get()))

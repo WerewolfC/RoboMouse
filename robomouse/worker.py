@@ -3,6 +3,7 @@ import time
 from robomouse.mouseDriver import MouseDriver
 from robomouse.utilities import Movement, MouseState, WorkerData
 
+HOURS_TO_MIN_RATIO = 60
 
 class Worker:
     """Implements mouse movement according to settings """
@@ -11,6 +12,7 @@ class Worker:
         self.movement = movement
         self.active_state = active_state # info from Togle me button
         self.mouse_driver = MouseDriver()
+        self.last_exec_minute = time.localtime(time.time()).tm_min
 
     def get_no_moves(self):
         """Return number of mouse moves executed"""
@@ -41,16 +43,25 @@ def main(connection):
                     recv_data.loop_period,
                     recv_data.movement_type,
                     recv_data.target_pos)
-    # main loop with sleep
+
     while True:
-        # check mouse state and do something
+        # create a counter to use for mouse move
+        read_minutes = time.localtime(time.time()).tm_min
+        if  worker.last_exec_minute > read_minutes:
+            read_minutes += HOURS_TO_MIN_RATIO
+
+        #TODO: delete check mouse state and do something
         print("Inside controller")
+        print(f'Received data {recv_data}\n of type{type(recv_data)}')
+        print(worker.last_exec_minute)
+
         if connection.poll():
             recv_data = connection.recv()
-            print(type(recv_data))
+            print(f'Received data {recv_data}\n of type{type(recv_data)}')
 
         # check mouse state
-        if recv_data.active_state == MouseState.ACTIVE:
+        if recv_data.active_state == MouseState.ACTIVE\
+            and (read_minutes - worker.last_exec_minute) >= recv_data.loop_period:
             # mouse move
             if recv_data.movement_type == Movement.MOVE_AND_CLICK:
                 coord_list = [recv_data.target_pos[0], recv_data.target_pos[1]]
@@ -60,8 +71,13 @@ def main(connection):
                 coord_list = [10, 10]
                 worker.control_mouse(worker.mouse_driver.to_relative_position,
                                      coord_list)
+            worker.last_exec_minute = time.localtime(time.time()).tm_min
+
+        #print(worker.last_exec_minute)
+        time.sleep(1)
 
 
         # send back number of clicks
 
-        time.sleep(recv_data.loop_period)
+        # time.sleep(recv_data.loop_period)
+        # time.sleep(1)
