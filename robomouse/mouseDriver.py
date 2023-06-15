@@ -11,24 +11,30 @@ class MouseDriver:
 
     @property
     def actual_coord_x(self):
+        """actual coordinates x getter"""
         return self._x
 
     @actual_coord_x.setter
     def actual_coord_x(self, value):
+        """actual coordinates x setter"""
         self._x = value
 
     @property
     def actual_coord_y(self):
+        """actual coordinates y getter"""
         return self._y
 
     @actual_coord_y.setter
     def actual_coord_y(self, value):
+        """actual coordinates y setter"""
         self._y = value
 
     def save_coordinates(self):
+        """save actual coordinates"""
         self._x, self._y = pyautogui.position()
 
     def move_to_original_position(self):
+        """command the mouse driver"""
         pyautogui.moveTo(self._x, self._y)
         self._no_of_moves += 1
 
@@ -46,4 +52,5 @@ class MouseDriver:
 
     @property
     def no_of_moves(self):
+        """property of no_of_moves"""
         return self._no_of_moves

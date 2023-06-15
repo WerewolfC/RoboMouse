@@ -1,5 +1,12 @@
 """Presenter class """
 from typing import Protocol
+from multiprocessing import Process, Pipe
+from robomouse.worker import main
+
+
+def disable_event():
+    """Empty function used to disable windows close x button"""
+    pass
 
 
 class View(Protocol):
@@ -21,11 +28,13 @@ class Presenter:
     def __init__(self, model, view):
         self.model = model
         self.view = view
+        self.worker_process = None
 
     def handle_exit_button(self):
         """Actions executed when close button is presed"""
         # stop backgroudn process
         # destroy Gui window
+        self.worker_process.terminate()
         self.view.destroy()
 
     def handle_get_saved_settings(self):
@@ -50,4 +59,11 @@ class Presenter:
     def run(self):
         """Run method of Presenter"""
         self.view.create_gui(self)
+            # set the pipe between App and Controller
+        rcv_conn, send_conn = Pipe()
+        self.worker_process = Process(target=main, args=(rcv_conn, ))
+        self.worker_process.start()
+
+        # disable x close main window button
+        self.view.protocol("WM_DELETE_WINDOW", disable_event)
         self.view.mainloop()

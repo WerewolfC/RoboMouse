@@ -51,3 +51,11 @@ class SettingsElement:
             f"Movement\t{self.movement_type}\n"\
             f"Active color\t{self.color_enable}\n"\
             f"Inactive color\t{self.color_disable}\n"
+
+@dataclass
+class WorkerData:
+    """Contains data sent to worker"""
+    active_state: MouseState = MouseState.ACTIVE
+    loop_period: int = 60
+    movement_type: Movement = Movement.MOVE_AND_CLICK
+    target_pos: tuple = (0, 500)
