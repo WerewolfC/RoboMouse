@@ -30,7 +30,6 @@ class Presenter(Protocol):
 
 class Gui(ttk.Window):
     """Class implements the main window """
-    _mouse_state = MouseState.ACTIVE
 
     def __init__(self, style_name):
         """Create entire GUI frame """
@@ -39,6 +38,7 @@ class Gui(ttk.Window):
         self.geometry(WINDOW_MAIN_SIZE)
         self.resizable(False, False)
 
+        self._mouse_state = MouseState.ACTIVE
         self.data_to_be_sent = None
         self.settings_win = None
         self._loaded_settings = None
@@ -49,6 +49,8 @@ class Gui(ttk.Window):
         """ Create main window gui """
         self.presenter = presenter
         self._loaded_settings, use_custom  = self.presenter.handle_get_saved_settings()
+        #TODO
+        print(f'GUI > loaded settings \n{self._loaded_settings}')
 
         frm_main = ttk.Frame()
 
@@ -138,7 +140,7 @@ class Gui(ttk.Window):
         self.presenter.transfer_mouse_state(self._mouse_state)
 
     @property
-    def get_mouse_state(self):
+    def mouse_state(self):
         """Protected var getter """
         return self._mouse_state
 

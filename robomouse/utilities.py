@@ -56,6 +56,13 @@ class SettingsElement:
 class WorkerData:
     """Contains data sent to worker"""
     active_state: MouseState = MouseState.ACTIVE
-    loop_period: int = 60
+    loop_period: int = 1
     movement_type: Movement = Movement.MOVE_AND_CLICK
-    target_pos: tuple = (0, 500)
+    target_pos: tuple = (0, 100)
+
+    def __str__(self) -> str:
+        """Override the str """
+        return f"Active state\t{self.active_state}\n"\
+            f"Loop_period\t{self.loop_period}\n"\
+            f"Movement_type\t{self.movement_type}\n"\
+            f"Target pos\t{self.target_pos}\n"

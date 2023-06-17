@@ -32,21 +32,20 @@ class Presenter:
         self.worker_process = None
         self.mouse_active = None
         self.sent_data = WorkerData()
-        self.rcv_conn, self.send_conn = Pipe()
+        self.child_connection, self.parent_connection = Pipe()
 
     def copy_worker_data(self, settings):
         """Copy settings data needed for worker"""
-        work_data = WorkerData(self.mouse_active,
+        work_data = WorkerData(self.view.mouse_state,
                                settings.timing_minutes,
                                settings.movement_type)
-        print(f'work data to be sent to worker\n\t{work_data}')
         return work_data
 
     def handle_exit_button(self):
         """Actions executed when close button is presed"""
         # stop backgroudn process
-        # destroy Gui window
         self.worker_process.terminate()
+        # destroy Gui window
         self.view.destroy()
 
     def handle_get_saved_settings(self):
@@ -67,17 +66,16 @@ class Presenter:
 
         # Presenter update sent to bkg process settings values
         self.sent_data = self.copy_worker_data(read_settings)
-        print(f'Send data {self.sent_data}')
-        self.send_conn.send(self.sent_data)
+        print(f'Presenter > Send data \n{self.sent_data}')
+        self.parent_connection.send(self.sent_data)
 
     def transfer_mouse_state(self, *args):
         """copy mouse active from gui to self and sent data"""
         self.mouse_active = args[0]
         self.sent_data.active_state = args[0]
-        print(f'Send data {self.sent_data}')
-        self.send_conn.send(self.sent_data)
-        #TODO: delete
-        print(f'toggle {self.sent_data.active_state}')
+        #TODO
+        print(f'Presenter > Send data \n{self.sent_data}')
+        self.parent_connection.send(self.sent_data)
 
     def run(self):
         """Run method of Presenter"""
@@ -86,8 +84,9 @@ class Presenter:
         self.view.protocol("WM_DELETE_WINDOW", disable_event)
 
         # set the pipe between App and Controller
-
-        self.worker_process = Process(target=main, args=(self.rcv_conn, ))
+        self.worker_process = Process(target=main,
+                                      args=(self.child_connection,
+                                            self.copy_worker_data(self.model.get_settings_obj()[0])))
         self.worker_process.start()
 
         self.view.mainloop()

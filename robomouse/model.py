@@ -24,12 +24,13 @@ class Model:
         if read_ok and isinstance(read_settings, SettingsElement):
             returned_settings = read_settings
             use_custom = True
-            print('Import OK !')
+            #TODO
+            # print('Import OK !')
         else:
-            print('Import NOK !')
+            # print('Import NOK !')
             use_custom = False
             returned_settings = SettingsElement()
-            print(f'Model: data read from dataclass:\n{returned_settings}')
+            # print(f'Model: data read from dataclass:\n{returned_settings}')
         return returned_settings, use_custom
 
     def read_pickle_file(self):
@@ -49,4 +50,5 @@ class Model:
         """Writes the actual settings in a bin file """
         with open(SETTINGS_FILE, 'bw') as bin_file:
             pickle.dump(settings_obj, bin_file)
-        print(f'data written to file:\n {settings_obj}')
+        #TODO
+        # print(f'data written to file:\n {settings_obj}')
