@@ -3,6 +3,9 @@ from typing import Protocol
 import tkinter as tk
 import ttkbootstrap as ttk
 
+import pyautogui
+import keyboard
+
 from robomouse.utilities import MouseState, SettingsElement, Movement, Color, SettingsStrings
 
 # window params
@@ -178,6 +181,8 @@ class GuiSettings(ttk.Toplevel):
         frm_settings = ttk.Frame(master=self)
         frm_timing = ttk.Frame(master=frm_settings)
         frm_movement = ttk.Frame(master=frm_settings)
+        frm_outer_target_position = ttk.Frame(master=frm_settings, height=35)
+        self.frm_target_position = ttk.Frame(master=frm_outer_target_position)
         frm_color_enable = ttk.Frame(master=frm_settings)
         frm_color_disable = ttk.Frame(master=frm_settings)
         frm_navigation = ttk.Frame(master=frm_settings)
@@ -213,6 +218,7 @@ class GuiSettings(ttk.Toplevel):
                                     text=" ".join(Movement.MOVE_AND_CLICK.name.split("_")).capitalize(),
                                     variable=self.movement_value,
                                     value=Movement.MOVE_AND_CLICK.value,
+                                    command=self.on_selected_move_click,
                                     bootstyle="info")
         rbtn_opt1.pack(side="left", expand=True, fill="both", anchor="w")
 
@@ -220,9 +226,58 @@ class GuiSettings(ttk.Toplevel):
                                     text=" ".join(Movement.JITTER.name.split("_")).capitalize(),
                                     variable=self.movement_value,
                                     value=Movement.JITTER.value,
+                                    command=self.on_selected_jitter,
                                     bootstyle="info")
         rbtn_opt2.pack(side="left", expand=True, fill="both", anchor="e")
         frm_movement.pack(expand=True, fill="both")
+
+        # target position
+        self.target_pos_x = tk.StringVar(master=frm_settings ,
+                                        value=str(self._loaded_settings.target_pos_xy[0]))
+        self.target_pos_y = tk.StringVar(master=frm_settings ,
+                                        value=str(self._loaded_settings.target_pos_xy[1]))
+
+        self.btn_read_target_pos = ttk.Button(master=self.frm_target_position,
+                                            text="Read target",
+                                            width=10,
+                                            command=self.callback_read_target_position,
+                                            default='disabled',
+                                            bootstyle="secondary")
+        self.btn_read_target_pos.pack(side="right",
+                                            padx=2, pady=2,
+                                            anchor="e")
+        self.lbl_target_pos_y = ttk.Entry(master=self.frm_target_position,
+                                                textvariable=self.target_pos_y,
+                                                width=4,
+                                                justify='center',
+                                                state='disabled')
+        self.lbl_target_pos_y.pack(side="right",
+                                    padx=2, pady=2,
+                                    anchor="e")
+        tk.Label(master = self.frm_target_position, text = 'Y : ').pack(side="right",
+                                                                        expand=True,
+                                                                        padx=2, pady=2,
+                                                                        fill="both",
+                                                                        anchor="e")
+        self.lbl_target_pos_x = ttk.Entry(master=self.frm_target_position,
+                                        textvariable=self.target_pos_x,
+                                        width=4,
+                                        justify='center',
+                                        state='disabled')
+        self.lbl_target_pos_x.pack(side="right",
+                                    padx=2, pady=2,
+                                    anchor="e")
+        tk.Label(master =self.frm_target_position, text = 'X : ').pack(side="right",
+                                                                expand=True,
+                                                                padx=2, pady=2,
+                                                                fill="both",
+                                                                anchor="e")
+
+        if self.movement_value.get()== Movement.MOVE_AND_CLICK.value:
+            self.frm_target_position.pack(expand=True, fill="both")
+
+        # pack the outer frame
+        frm_outer_target_position.pack(expand=True, fill="both")
 
         # colors
         tk.Label(master=frm_color_enable, text=str(SettingsStrings.COLOR_ENABLE)).pack(side="left",
@@ -273,9 +328,11 @@ class GuiSettings(ttk.Toplevel):
     def callback_save_settings(self):
         """Sends the active settings to presenter """
         active_settings = SettingsElement(self.loop_value.get(),
-                                                Movement(self.movement_value.get()),
-                                                Color(self.color_enable.get()),
-                                                Color(self.color_disable.get()))
+                            Movement(self.movement_value.get()),
+                            Color(self.color_enable.get()),
+                            Color(self.color_disable.get()),
+                            (int(self.target_pos_x.get()), int(self.target_pos_y.get())))
+        print(f'GUI on save> {active_settings}')
         self.presenter.handle_save_settings_data(active_settings)
 
     def _round_scale_value(self, extra=None):
@@ -287,6 +344,38 @@ class GuiSettings(ttk.Toplevel):
     def _close_settings(self):
         """Destroy the setting window """
         SettingsWinManager.destroy_settings_window()
+
+    def callback_read_target_position(self):
+        """Reading target position for the mouse in a loop"""
+        ttk.dialogs.dialogs.Messagebox.show_warning(
+            message="Read mouse coordinates started!\nMove your mouse to the "
+            "desired position and press \"q\" key",
+            title="Read mouse target positon",
+            alert =True
+            )
+        try:
+            while True:
+                x, y = pyautogui.position()
+                self.target_pos_x.set(str(x))
+                self.target_pos_y.set(str(y))
+                if keyboard.is_pressed('q'):
+                    break
+        except pyautogui.FailSafeException:
+            print('keyboard interrupt')
+
+        ttk.dialogs.dialogs.Messagebox.show_info(
+            message=f"Read mouse coordinates started finished!\n"
+            f"X: {self.target_pos_x.get()} Y: {self.target_pos_y.get()}",
+            title="Read mouse target positon"
+            )
+
+    def on_selected_move_click(self):
+        """On rbtn selected show target position frame"""
+        self.frm_target_position.pack(expand=True, fill="both")
+
+    def on_selected_jitter(self):
+        """On rbtn selected hide target position frame"""
+        self.frm_target_position.pack_forget()
 
 
 class SettingsWinManager:

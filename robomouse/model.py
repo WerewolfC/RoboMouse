@@ -51,4 +51,4 @@ class Model:
         with open(SETTINGS_FILE, 'bw') as bin_file:
             pickle.dump(settings_obj, bin_file)
         #TODO
-        # print(f'data written to file:\n {settings_obj}')
+        print(f'data written to file:\n {settings_obj}')

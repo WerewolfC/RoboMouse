@@ -11,7 +11,8 @@ from robomouse.gui import Gui
 def main():
     """Main app function"""
     model = Model()
-    view = Gui("darkly")
+    # view = Gui("darkly")
+    view = Gui("flatly")
     presenter = Presenter(model, view)
     presenter.run()
 

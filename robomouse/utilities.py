@@ -2,6 +2,9 @@
 from enum import Enum
 from dataclasses import dataclass
 
+DEFAULT_TARGET_POS = (0, 500)
+
+
 class MouseState(Enum):
     INACTIVE = 0
     ACTIVE = 1
@@ -44,13 +47,16 @@ class SettingsElement:
     movement_type: Movement = Movement.MOVE_AND_CLICK
     color_enable: Color = Color.GREEN
     color_disable: Color = Color.GREY
+    target_pos_xy: tuple = DEFAULT_TARGET_POS
+
 
     def __str__(self) -> str:
         """Override the str """
         return f"Timing\t{self.timing_minutes}\n"\
             f"Movement\t{self.movement_type}\n"\
             f"Active color\t{self.color_enable}\n"\
-            f"Inactive color\t{self.color_disable}\n"
+            f"Inactive color\t{self.color_disable}\n"\
+            f"Target pos\t{self.target_pos_xy}\n"
 
 @dataclass
 class WorkerData:
@@ -58,7 +64,7 @@ class WorkerData:
     active_state: MouseState = MouseState.ACTIVE
     loop_period: int = 1
     movement_type: Movement = Movement.MOVE_AND_CLICK
-    target_pos: tuple = (0, 100)
+    target_pos: tuple = DEFAULT_TARGET_POS
 
     def __str__(self) -> str:
         """Override the str """

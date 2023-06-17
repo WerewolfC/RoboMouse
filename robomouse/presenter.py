@@ -38,7 +38,8 @@ class Presenter:
         """Copy settings data needed for worker"""
         work_data = WorkerData(self.view.mouse_state,
                                settings.timing_minutes,
-                               settings.movement_type)
+                               settings.movement_type,
+                               settings.target_pos_xy)
         return work_data
 
     def handle_exit_button(self):
@@ -82,11 +83,12 @@ class Presenter:
         self.view.create_gui(self)
         # disable x close main window button
         self.view.protocol("WM_DELETE_WINDOW", disable_event)
-
+        #initialize sent data
+        self.sent_data = self.copy_worker_data(self.model.get_settings_obj()[0])
         # set the pipe between App and Controller
         self.worker_process = Process(target=main,
                                       args=(self.child_connection,
-                                            self.copy_worker_data(self.model.get_settings_obj()[0])))
+                                            self.sent_data))
         self.worker_process.start()
 
         self.view.mainloop()
