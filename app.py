@@ -1,5 +1,5 @@
 """RoboMouse app v2.0
-- GUI working
+- GUI workingq
 TODO: implement backgorund process for the presenter
 """
 
@@ -11,7 +11,6 @@ from robomouse.gui import Gui
 def main():
     """Main app function"""
     model = Model()
-    # view = Gui("darkly")
     view = Gui("flatly")
     presenter = Presenter(model, view)
     presenter.run()

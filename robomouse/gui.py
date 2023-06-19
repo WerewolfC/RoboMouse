@@ -9,10 +9,10 @@ import keyboard
 from robomouse.utilities import MouseState, SettingsElement, Movement, Color, SettingsStrings
 
 # window params
-WINDOW_MAIN_SIZE = "445x120"
+WINDOW_MAIN_SIZE = "445x150"
 WINDOW_MAIN_TITLE = "Move it !"
 
-WINDOW_SETTINGS_SIZE = "280x200"
+WINDOW_SETTINGS_SIZE = "320x230"
 WINDOW_SETTINGS_TITLE = "Settings"
 
 
@@ -348,8 +348,8 @@ class GuiSettings(ttk.Toplevel):
     def callback_read_target_position(self):
         """Reading target position for the mouse in a loop"""
         ttk.dialogs.dialogs.Messagebox.show_warning(
-            message="Read mouse coordinates started!\nMove your mouse to the "
-            "desired position and press \"q\" key",
+            message="Read mouse coordinates procedure!\nAfter confirming Ok in this window,"
+            " move your mouse to the desired position and press \"q\" key",
             title="Read mouse target positon",
             alert =True
             )
