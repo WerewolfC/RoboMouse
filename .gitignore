@@ -1,0 +1,7 @@
+# hidden folders
+.venv
+.vscode
+
+# compilation files
+__pycache__
+*.bin
