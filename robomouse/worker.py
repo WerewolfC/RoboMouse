@@ -71,4 +71,6 @@ def main(connection, initial_data):
                                      coord_list)
             worker.last_exec_minute = time.localtime(time.time()).tm_min
             print(f'Worker > {worker.last_exec_minute}')
-        #time.sleep(2)
+
+            # send data to main process
+            connection.send(worker.get_no_moves())

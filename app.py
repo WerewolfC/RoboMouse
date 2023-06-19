@@ -1,6 +1,4 @@
-"""RoboMouse app v2.0
-- GUI workingq
-TODO: implement backgorund process for the presenter
+"""RoboMouse app v1.0
 """
 
 from robomouse.presenter import Presenter
