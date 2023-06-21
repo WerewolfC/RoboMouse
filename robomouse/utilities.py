@@ -1,10 +1,13 @@
 """ Utilities module containing Enum, Const and functions"""
 from enum import Enum
 from dataclasses import dataclass
-import time
 from threading import Timer
 
 DEFAULT_TARGET_POS = (0, 500)
+
+def disable_event():
+    """Empty function used to disable windows close x button"""
+    pass
 
 
 class MouseState(Enum):

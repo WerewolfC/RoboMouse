@@ -2,12 +2,8 @@
 from typing import Protocol
 from multiprocessing import Process, Pipe
 from robomouse.worker import main
-from robomouse.utilities import WorkerData, RepeatTimer
+from robomouse.utilities import WorkerData, RepeatTimer, disable_event
 
-
-def disable_event():
-    """Empty function used to disable windows close x button"""
-    pass
 
 def read_from_thread(presenter):
     """Executed by Timer thread

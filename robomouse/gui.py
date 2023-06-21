@@ -6,13 +6,14 @@ import ttkbootstrap as ttk
 import pyautogui
 import keyboard
 
-from robomouse.utilities import MouseState, SettingsElement, Movement, Color, SettingsStrings
+from robomouse.utilities import MouseState, SettingsElement, Movement, Color, SettingsStrings,\
+                                disable_event
 
 # window params
-WINDOW_MAIN_SIZE = "445x150"
+WINDOW_MAIN_SIZE = "455x150"
 WINDOW_MAIN_TITLE = "Move it !"
 
-WINDOW_SETTINGS_SIZE = "320x230"
+WINDOW_SETTINGS_SIZE = "330x230"
 WINDOW_SETTINGS_TITLE = "Settings"
 
 
@@ -183,6 +184,8 @@ class GuiSettings(ttk.Toplevel):
         self.resizable(False, False)
         self.presenter = presenter
 
+        # disable x close main window button
+        self.protocol("WM_DELETE_WINDOW", disable_event)
         self._create_gui_settings()
 
     def _create_gui_settings(self):
@@ -206,16 +209,16 @@ class GuiSettings(ttk.Toplevel):
                                                                                     anchor="w")
         self.loop_value = tk.IntVar(master=frm_settings,
                                     value=self._loaded_settings.timing_minutes)
-        ttk.Label(master=frm_timing, textvariable=self.loop_value).pack(side="left",
-                                                                        padx=5,
-                                                                        anchor="w")
+        ttk.Label(master=frm_timing, textvariable=self.loop_value, width=2).pack(side="left",
+                                                                                padx=2,
+                                                                                anchor="w")
         self.scale_timming = ttk.Scale(master=frm_timing,
                                        value=self.loop_value.get(),
                                        from_=1, to=9,
                                        command=self._round_scale_value,
                                        bootstyle="info")
         self.scale_timming.pack(side="left", expand=True,
-                                fill="both", pady=5, anchor="w")
+                                fill="both", pady=2, anchor="w")
         frm_timing.pack(expand=True, fill="both")
 
         # move type
@@ -241,8 +244,8 @@ class GuiSettings(ttk.Toplevel):
                                     command=self.on_selected_jitter,
                                     bootstyle="info")
 
-        rbtn_opt2.pack(side="right", expand=True, fill="y", anchor="e")
-        rbtn_opt1.pack(side="right", expand=True, fill="y", anchor="e")
+        rbtn_opt2.pack(side="right", expand=True, fill="y", anchor="w")
+        rbtn_opt1.pack(side="right", expand=True, fill="y", anchor="w")
         frm_movement.pack(expand=True, fill="both")
 
         # target position
@@ -296,8 +299,8 @@ class GuiSettings(ttk.Toplevel):
         # colors
         tk.Label(master=frm_color_enable, text=str(SettingsStrings.COLOR_ENABLE)).pack(side="left",
                                                                                        expand=True,
-                                                                                       padx=2, pady=2,
-                                                                                       fill="both",
+                                                                                       pady=2,
+                                                                                       fill="x",
                                                                                        anchor="e")
         self.color_enable = tk.StringVar(master=frm_settings,
                                          value=self._loaded_settings.color_enable.value)
@@ -311,8 +314,8 @@ class GuiSettings(ttk.Toplevel):
         tk.Label(master=frm_color_disable,
                  text=str(SettingsStrings.COLOR_DISABLE)).pack(side="left",
                                                                     expand=True,
-                                                                    padx=2, pady=2,
-                                                                    fill="both",
+                                                                    pady=2,
+                                                                    fill="x",
                                                                     anchor="e")
         self.color_disable = tk.StringVar(master=frm_settings,
                                           value=self._loaded_settings.color_disable.value)
@@ -371,9 +374,9 @@ class GuiSettings(ttk.Toplevel):
         )
         try:
             while True:
-                x, y = pyautogui.position()
-                self.target_pos_x.set(str(x))
-                self.target_pos_y.set(str(y))
+                pos_x, pos_y = pyautogui.position()
+                self.target_pos_x.set(str(pos_x))
+                self.target_pos_y.set(str(pos_y))
                 if keyboard.is_pressed('q'):
                     break
         except pyautogui.FailSafeException:

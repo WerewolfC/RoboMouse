@@ -74,3 +74,4 @@ def main(connection, initial_data):
 
             # send data to main process
             connection.send(worker.get_no_moves())
+        time.sleep(3)
