@@ -1,18 +1,21 @@
 # RoboMouse - demo / learning project 
-![image](https://github.com/WerewolfC/RoboMouse/assets/136624525/8e836193-35ba-4a4f-bae7-e1fa8e38e938)
+![image](https://github.com/WerewolfC/RoboMouse/assets/136624525/d09e1995-c818-4d45-a3c9-b2e4882e23c0)
+
 # Description
 Small demo/learning project that "keeps the screensaver away" by moving the mouse with the use of PyAutoGui, according to user settings.
+The mouse move functionality is being executed when the minute is changed.
+
 It uses :
 - MVP model
 - Protocol
+- Timer and Thread
 - Process and Pipe
 - using TK with the beautifull ttkbootstrap
   
 # Install
+
 # TODO:
-- Replace the print with Python logging
-- move the number of moves from worker to model
-  
+
 # Known Issues
 -...
 
