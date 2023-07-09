@@ -1,3 +1,4 @@
+"""Mouse driver functionality using PyAutoGUI"""
 import pyautogui
 
 
@@ -42,7 +43,6 @@ class MouseDriver:
     def to_absolute_position_and_click(*args):
         """Moves the mouse to specified position and right click"""
         pyautogui.click(args[0][0], args[0][1])
-
         #TODO
         print(f'Driver > Executed absolute mouse move {args[0]}')
 

@@ -1,8 +1,10 @@
 """Presenter class """
 from typing import Protocol
+import logging
 from multiprocessing import Process, Pipe
 from robomouse.worker import main
-from robomouse.utilities import WorkerData, RepeatTimer, disable_event
+from robomouse.utilities import WorkerData, RepeatTimer, disable_event,\
+                            config_logger
 
 
 def read_from_thread(presenter):
@@ -11,7 +13,7 @@ def read_from_thread(presenter):
     """
     if presenter.parent_connection.poll():
         recv_data = presenter.parent_connection.recv()
-        print(f'Thread > Data reveived {recv_data}', flush=True)
+        presenter.app_logger.info('Thread - Data received \n%s',recv_data)
         presenter.view.update_executions(str(recv_data))
 
 
@@ -42,6 +44,7 @@ class Presenter:
         self.sent_data = WorkerData()
         self.child_connection, self.parent_connection = Pipe(duplex=True)
         self.timer_thread = None
+        self.app_logger = config_logger(logging.getLogger(__name__))
 
     def copy_worker_data(self, settings):
         """Copy settings data needed for worker"""
@@ -79,15 +82,14 @@ class Presenter:
 
         # Presenter update sent to bkg process settings values
         self.sent_data = self.copy_worker_data(read_settings)
-        print(f'Presenter > Send data \n{self.sent_data}')
+        self.app_logger.info('Send data \n%s',self.sent_data)
         self.parent_connection.send(self.sent_data)
 
     def transfer_mouse_state(self, *args):
         """copy mouse active from gui to self and sent data"""
         self.mouse_active = args[0]
         self.sent_data.active_state = args[0]
-        #TODO
-        print(f'Presenter > Send data \n{self.sent_data}')
+        self.app_logger.info('Send data \n%s',self.sent_data)
         self.parent_connection.send(self.sent_data)
 
     def run(self):
@@ -106,6 +108,6 @@ class Presenter:
         # create timer thread
         self.timer_thread = RepeatTimer(10, read_from_thread, [self])
         self.timer_thread.start() #recalling run
-        print('Presenter > starting thread timer', flush=True)
+        self.app_logger.info('Starting thread timer')
 
         self.view.mainloop()

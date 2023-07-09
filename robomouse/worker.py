@@ -1,7 +1,8 @@
 """Worker module that implements the mouse movement according to the settings"""
 import time
-from robomouse.mouseDriver import MouseDriver
-from robomouse.utilities import Movement, MouseState, WorkerData
+import logging
+from robomouse.mouse_driver import MouseDriver
+from robomouse.utilities import Movement, MouseState, config_logger
 
 HOURS_TO_MIN_RATIO = 60
 
@@ -33,7 +34,8 @@ class Worker:
 def main(connection, initial_data):
     """Main function which is executed as a new process """
     # fetch worker data
-    print(f'Worker > initial data \n{initial_data}')
+    app_logger = config_logger(logging.getLogger(__name__))
+    app_logger.info('Worker: initial data \n%s',initial_data)
     recv_data = initial_data
 
     worker = Worker(recv_data.active_state,
@@ -41,9 +43,9 @@ def main(connection, initial_data):
                     recv_data.movement_type,
                     recv_data.target_pos)
 
-    #TODO: delete check mouse state and do something
-    print(f'Worker > 1st time Worker data \n{recv_data}')
-    print(f'Worker > Minute {worker.last_exec_minute}')
+    app_logger.info('Worker: Initial (Minute %s) Worker data \n%s',
+                    worker.last_exec_minute,
+                    recv_data)
 
     while True:
         # create a counter to use for mouse move
@@ -53,8 +55,7 @@ def main(connection, initial_data):
 
         if connection.poll():
             recv_data = connection.recv()
-            #TODO
-            print(f'Worker > \nLoop Received data {recv_data}')
+            app_logger.info('Loop Received data\n%s', recv_data)
 
         # check mouse state
         if recv_data.active_state == MouseState.ACTIVE\
@@ -70,7 +71,7 @@ def main(connection, initial_data):
                 worker.control_mouse(worker.mouse_driver.to_relative_position,
                                      coord_list)
             worker.last_exec_minute = time.localtime(time.time()).tm_min
-            print(f'Worker > {worker.last_exec_minute}')
+            app_logger.info('Executed on minute %s', worker.last_exec_minute)
 
             # send data to main process
             connection.send(worker.get_no_moves())

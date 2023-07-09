@@ -5,3 +5,4 @@
 # compilation files
 __pycache__
 *.bin
+*.log

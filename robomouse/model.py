@@ -1,6 +1,8 @@
 """Model class """
 import pickle
-from robomouse.utilities import SettingsElement
+import logging
+from robomouse.utilities import SettingsElement, config_logger
+
 
 SETTINGS_FILE = "settings.bin"
 
@@ -14,6 +16,7 @@ class Model:
         """Load settings data from file if file found,
         else use default values implemented in dataclass
         """
+        self.app_logger = config_logger(logging.getLogger(__name__))
 
     def get_settings_obj(self):
         """Retuns a settings obj based on the values read from file
@@ -24,13 +27,11 @@ class Model:
         if read_ok and isinstance(read_settings, SettingsElement):
             returned_settings = read_settings
             use_custom = True
-            #TODO
-            # print('Import OK !')
+            self.app_logger.info('Import OK !')
         else:
-            # print('Import NOK !')
+            self.app_logger.warning('Import NOK !!!  Using default settings')
             use_custom = False
             returned_settings = SettingsElement()
-            # print(f'Model: data read from dataclass:\n{returned_settings}')
         return returned_settings, use_custom
 
     def read_pickle_file(self):
@@ -42,7 +43,8 @@ class Model:
         try:
             with open(SETTINGS_FILE, 'br') as bin_file:
                 imported_settings = (pickle.load(bin_file), True)
-        except FileNotFoundError:
+        except FileNotFoundError as error_not_found:
+            self.app_logger.error('%s', error_not_found)
             imported_settings = (None, False)
         return imported_settings
 
@@ -50,5 +52,4 @@ class Model:
         """Writes the actual settings in a bin file """
         with open(SETTINGS_FILE, 'bw') as bin_file:
             pickle.dump(settings_obj, bin_file)
-        #TODO
-        print(f'data written to file:\n {settings_obj}')
+        self.app_logger.info('Data written to file: \n%s', settings_obj)

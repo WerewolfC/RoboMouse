@@ -2,12 +2,13 @@
 from typing import Protocol
 import tkinter as tk
 import ttkbootstrap as ttk
+import logging
 
 import pyautogui
 import keyboard
 
 from robomouse.utilities import MouseState, SettingsElement, Movement, Color, SettingsStrings,\
-                                disable_event
+                                disable_event, config_logger
 
 # window params
 WINDOW_MAIN_SIZE = "455x150"
@@ -50,13 +51,13 @@ class Gui(ttk.Window):
         self.presenter = None
         self.lbl_status = None
         self.executions_value = None
+        self.app_logger = config_logger(logging.getLogger(__name__))
 
     def create_gui(self, presenter):
         """ Create main window gui """
         self.presenter = presenter
         self._loaded_settings, use_custom = self.presenter.handle_get_saved_settings()
-        # TODO
-        print(f'GUI > loaded settings \n{self._loaded_settings}')
+        self.app_logger.info('Loaded settings \n%s',self._loaded_settings)
 
         frm_main = ttk.Frame()
 
@@ -165,7 +166,7 @@ class Gui(ttk.Window):
         """Updates the settings used for main window """
         self._loaded_settings = settings_obj
         self.update_status()
-        print(self._loaded_settings)
+        self.app_logger.info('Update settings \n%s',self._loaded_settings)
 
     def update_executions(self, value):
         """Callback method to update the number of mouse moves """
@@ -183,6 +184,7 @@ class GuiSettings(ttk.Toplevel):
         self.geometry(WINDOW_SETTINGS_SIZE)
         self.resizable(False, False)
         self.presenter = presenter
+        self.app_logger = config_logger(logging.getLogger(__name__))
 
         # disable x close main window button
         self.protocol("WM_DELETE_WINDOW", disable_event)
@@ -351,7 +353,7 @@ class GuiSettings(ttk.Toplevel):
                                           Color(self.color_enable.get()),
                                           Color(self.color_disable.get()),
                                           (int(self.target_pos_x.get()), int(self.target_pos_y.get())))
-        print(f'GUI on save> {active_settings}')
+        self.app_logger.info('GUI Save settings \n%s', active_settings)
         self.presenter.handle_save_settings_data(active_settings)
 
     def _round_scale_value(self, extra=None):
@@ -379,8 +381,8 @@ class GuiSettings(ttk.Toplevel):
                 self.target_pos_y.set(str(pos_y))
                 if keyboard.is_pressed('q'):
                     break
-        except pyautogui.FailSafeException:
-            print('keyboard interrupt')
+        except pyautogui.FailSafeException as safe_exception:
+            self.app_logger.error('PyAutoGUI failsafe exception \n%s', safe_exception)
 
         ttk.dialogs.dialogs.Messagebox.show_info(
             message=f"Read mouse coordinates finished!\n"

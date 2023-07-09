@@ -2,25 +2,43 @@
 from enum import Enum
 from dataclasses import dataclass
 from threading import Timer
+import logging
 
 DEFAULT_TARGET_POS = (0, 500)
 
 def disable_event():
     """Empty function used to disable windows close x button"""
-    pass
+
+
+def config_logger(custom_logger):
+    """factory method that returns a custom logger obj"""
+    # set logging level
+    custom_logger.setLevel(logging.INFO)
+    # create handler
+    log_handler = logging.FileHandler('app.log')
+    # create formater obj
+    handler_formatter = logging.Formatter('%(asctime)s:%(levelname)s - %(name)s > %(message)s')
+    # assign formater to handler
+    log_handler.setFormatter(handler_formatter)
+    # assign handler to logger
+    custom_logger.addHandler(log_handler)
+    return custom_logger
 
 
 class MouseState(Enum):
+    """Enum subclass with 2 elements"""
     INACTIVE = 0
     ACTIVE = 1
 
 
 class Movement(Enum):
+    """Enum subclass with 2 elements"""
     JITTER = 0
     MOVE_AND_CLICK = 1
 
 
 class Color(Enum):
+    """Enum subclass with color elements"""
     GREEN = "green2"
     BLUE = "deep sky blue"
     GOLD = "gold"
@@ -81,6 +99,7 @@ class WorkerData:
 
 
 class RepeatTimer(Timer):
+    """Timer subclass of Timer"""
     def run(self):
         while not self.finished.wait(self.interval):
             self.function(*self.args,**self.kwargs)
