@@ -2,12 +2,16 @@
 from typing import Protocol
 from multiprocessing import Process, Pipe
 from robomouse.worker import main
-from robomouse.utilities import WorkerData
+from robomouse.utilities import WorkerData, RepeatTimer, disable_event
 
 
-def disable_event():
-    """Empty function used to disable windows close x button"""
-    pass
+def read_from_thread(presenter):
+    """Executed by Timer thread
+    implements the Pipe rcv method
+    """
+    if presenter.parent_connection.poll():
+        recv_data = presenter.parent_connection.recv()
+        presenter.view.update_executions(str(recv_data))
 
 
 class View(Protocol):
@@ -23,6 +27,9 @@ class View(Protocol):
     def update_settings(self, settings_obj):
         ...
 
+    def update_executions(self, value):
+        ...
+
 
 class Presenter:
     """Presenter class """
@@ -32,7 +39,8 @@ class Presenter:
         self.worker_process = None
         self.mouse_active = None
         self.sent_data = WorkerData()
-        self.child_connection, self.parent_connection = Pipe()
+        self.child_connection, self.parent_connection = Pipe(duplex=True)
+        self.timer_thread = None
 
     def copy_worker_data(self, settings):
         """Copy settings data needed for worker"""
@@ -48,6 +56,9 @@ class Presenter:
         self.worker_process.terminate()
         # destroy Gui window
         self.view.destroy()
+
+        # kill timer thread
+        self.timer_thread.cancel()
 
     def handle_get_saved_settings(self):
         """Gets saved settings from the model"""
@@ -67,15 +78,12 @@ class Presenter:
 
         # Presenter update sent to bkg process settings values
         self.sent_data = self.copy_worker_data(read_settings)
-        print(f'Presenter > Send data \n{self.sent_data}')
         self.parent_connection.send(self.sent_data)
 
     def transfer_mouse_state(self, *args):
         """copy mouse active from gui to self and sent data"""
         self.mouse_active = args[0]
         self.sent_data.active_state = args[0]
-        #TODO
-        print(f'Presenter > Send data \n{self.sent_data}')
         self.parent_connection.send(self.sent_data)
 
     def run(self):
@@ -90,5 +98,9 @@ class Presenter:
                                       args=(self.child_connection,
                                             self.sent_data))
         self.worker_process.start()
+
+        # create timer thread
+        self.timer_thread = RepeatTimer(10, read_from_thread, [self])
+        self.timer_thread.start() #recalling run
 
         self.view.mainloop()

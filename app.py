@@ -1,6 +1,4 @@
-"""RoboMouse app v2.0
-- GUI working
-TODO: implement backgorund process for the presenter
+"""RoboMouse app v1.0
 """
 
 from robomouse.presenter import Presenter
@@ -11,7 +9,6 @@ from robomouse.gui import Gui
 def main():
     """Main app function"""
     model = Model()
-    # view = Gui("darkly")
     view = Gui("flatly")
     presenter = Presenter(model, view)
     presenter.run()

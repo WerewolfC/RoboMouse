@@ -1,3 +1,4 @@
+"""Mouse driver functionality using PyAutoGUI"""
 import pyautogui
 
 
@@ -43,21 +44,15 @@ class MouseDriver:
         """Moves the mouse to specified position and right click"""
         pyautogui.click(args[0][0], args[0][1])
 
-        #TODO
-        print(f'Driver > Executed absolute mouse move {args[0]}')
-
     @staticmethod
     def to_relative_position(*args):
         """Moves the mouse to relative position"""
         pyautogui.moveRel(args[0][0], args[0][1])
-        #TODO
-        print(f'Driver > Executed relative mouse move {args[0]}')
 
     @staticmethod
     def unified_move_action(move_method, *args):
         """Executes the move_method with the arguments"""
         move_method(args[0][0], args[0][1])
-        print(f'Driver > Executed mouse move {move_method} {args[0]}')
 
     @property
     def no_of_moves(self):

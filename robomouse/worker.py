@@ -1,7 +1,7 @@
 """Worker module that implements the mouse movement according to the settings"""
 import time
-from robomouse.mouseDriver import MouseDriver
-from robomouse.utilities import Movement, MouseState, WorkerData
+from robomouse.mouse_driver import MouseDriver
+from robomouse.utilities import Movement, MouseState
 
 HOURS_TO_MIN_RATIO = 60
 
@@ -33,17 +33,12 @@ class Worker:
 def main(connection, initial_data):
     """Main function which is executed as a new process """
     # fetch worker data
-    print(f'Worker > initial data \n{initial_data}')
     recv_data = initial_data
 
     worker = Worker(recv_data.active_state,
                     recv_data.loop_period,
                     recv_data.movement_type,
                     recv_data.target_pos)
-
-    #TODO: delete check mouse state and do something
-    print(f'Worker > 1st time Worker data \n{recv_data}')
-    print(f'Worker > Minute {worker.last_exec_minute}')
 
     while True:
         # create a counter to use for mouse move
@@ -53,8 +48,6 @@ def main(connection, initial_data):
 
         if connection.poll():
             recv_data = connection.recv()
-            #TODO
-            print(f'Worker > \nLoop Received data {recv_data}')
 
         # check mouse state
         if recv_data.active_state == MouseState.ACTIVE\
@@ -70,5 +63,7 @@ def main(connection, initial_data):
                 worker.control_mouse(worker.mouse_driver.to_relative_position,
                                      coord_list)
             worker.last_exec_minute = time.localtime(time.time()).tm_min
-            print(f'Worker > {worker.last_exec_minute}')
-        #time.sleep(2)
+
+            # send data to main process
+            connection.send(worker.get_no_moves())
+        time.sleep(3)

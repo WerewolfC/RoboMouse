@@ -1,8 +1,13 @@
 """ Utilities module containing Enum, Const and functions"""
 from enum import Enum
 from dataclasses import dataclass
+from threading import Timer
 
 DEFAULT_TARGET_POS = (0, 500)
+
+def disable_event():
+    """Empty function used to disable windows close x button"""
+    pass
 
 
 class MouseState(Enum):
@@ -58,6 +63,7 @@ class SettingsElement:
             f"Inactive color\t{self.color_disable}\n"\
             f"Target pos\t{self.target_pos_xy}\n"
 
+
 @dataclass
 class WorkerData:
     """Contains data sent to worker"""
@@ -72,3 +78,9 @@ class WorkerData:
             f"Loop_period\t{self.loop_period}\n"\
             f"Movement_type\t{self.movement_type}\n"\
             f"Target pos\t{self.target_pos}\n"
+
+
+class RepeatTimer(Timer):
+    def run(self):
+        while not self.finished.wait(self.interval):
+            self.function(*self.args,**self.kwargs)
