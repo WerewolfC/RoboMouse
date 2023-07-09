@@ -11,7 +11,6 @@ def read_from_thread(presenter):
     """
     if presenter.parent_connection.poll():
         recv_data = presenter.parent_connection.recv()
-        print(f'Thread > Data reveived {recv_data}', flush=True)
         presenter.view.update_executions(str(recv_data))
 
 
@@ -79,15 +78,12 @@ class Presenter:
 
         # Presenter update sent to bkg process settings values
         self.sent_data = self.copy_worker_data(read_settings)
-        print(f'Presenter > Send data \n{self.sent_data}')
         self.parent_connection.send(self.sent_data)
 
     def transfer_mouse_state(self, *args):
         """copy mouse active from gui to self and sent data"""
         self.mouse_active = args[0]
         self.sent_data.active_state = args[0]
-        #TODO
-        print(f'Presenter > Send data \n{self.sent_data}')
         self.parent_connection.send(self.sent_data)
 
     def run(self):
@@ -106,6 +102,5 @@ class Presenter:
         # create timer thread
         self.timer_thread = RepeatTimer(10, read_from_thread, [self])
         self.timer_thread.start() #recalling run
-        print('Presenter > starting thread timer', flush=True)
 
         self.view.mainloop()

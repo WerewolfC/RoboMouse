@@ -55,9 +55,6 @@ class Gui(ttk.Window):
         """ Create main window gui """
         self.presenter = presenter
         self._loaded_settings, use_custom = self.presenter.handle_get_saved_settings()
-        # TODO
-        print(f'GUI > loaded settings \n{self._loaded_settings}')
-
         frm_main = ttk.Frame()
 
         frm_btn_toggle = ttk.Frame(master=frm_main)
@@ -165,7 +162,6 @@ class Gui(ttk.Window):
         """Updates the settings used for main window """
         self._loaded_settings = settings_obj
         self.update_status()
-        print(self._loaded_settings)
 
     def update_executions(self, value):
         """Callback method to update the number of mouse moves """
@@ -351,7 +347,6 @@ class GuiSettings(ttk.Toplevel):
                                           Color(self.color_enable.get()),
                                           Color(self.color_disable.get()),
                                           (int(self.target_pos_x.get()), int(self.target_pos_y.get())))
-        print(f'GUI on save> {active_settings}')
         self.presenter.handle_save_settings_data(active_settings)
 
     def _round_scale_value(self, extra=None):
