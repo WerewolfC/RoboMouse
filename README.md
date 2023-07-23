@@ -11,6 +11,13 @@ It uses :
 - Timer and Thread
 - Process and Pipe
 - using TK with the beautifull ttkbootstrap
+
+Key bindings
+- Space: toggle state
+- Alt + s: open Settings window
+- Ctrl + c: close main window
+- Ctrl + s: save settings
+- Escape: close Settings window
   
 # Install
 
