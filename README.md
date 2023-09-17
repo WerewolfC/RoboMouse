@@ -1,4 +1,4 @@
-# RoboMouse - demo / learning project
+# RoboMouse - demo / learning project 
 ![image](https://github.com/WerewolfC/RoboMouse/assets/136624525/d09e1995-c818-4d45-a3c9-b2e4882e23c0)
 
 # Description
