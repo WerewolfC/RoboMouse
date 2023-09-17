@@ -14,12 +14,14 @@ It uses :
 
 Key bindings
 - Space: toggle state
-- Alt + s: open Settings window
-- Ctrl + c: close main window
+- Ctrl + o: open Settings window
+- Ctrl + q: close main window
 - Ctrl + s: save settings
 - Escape: close Settings window
-  
-# Install
+
+# Setup and how to use
+- Download the zipped code and extract it.
+- Run setup.bat to create Python virtual enviroment and the launcher file.
 
 # TODO:
 

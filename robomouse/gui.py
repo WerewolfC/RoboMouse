@@ -7,7 +7,8 @@ import pyautogui
 import keyboard
 
 from robomouse.utilities import MouseState, SettingsElement, Movement, Color, SettingsStrings,\
-                                disable_event
+                                disable_event, SHORT_TOGGLE_ACTIVE, SHORT_SHOW_SETTINGS,\
+                                SHORT_EXIT, SHORT_SAVE_SETTINGS, SHORT_CLOSE_SETTINGS
 
 # window params
 WINDOW_MAIN_SIZE = "455x150"
@@ -124,9 +125,9 @@ class Gui(ttk.Window):
             )
 
         # key binding
-        self.presenter.view.bind('<space>', lambda event:self._toggle_state())
-        self.presenter.view.bind('<Alt-s>', lambda event:self._show_settings())
-        self.presenter.view.bind('<Control-c>', lambda event:self.presenter.handle_exit_button())
+        self.presenter.view.bind(SHORT_TOGGLE_ACTIVE, lambda event:self._toggle_state())
+        self.presenter.view.bind(SHORT_SHOW_SETTINGS, lambda event:self._show_settings())
+        self.presenter.view.bind(SHORT_EXIT, lambda event:self.presenter.handle_exit_button())
 
     def update_status(self):
         """Update the status label text and color """
@@ -346,8 +347,8 @@ class GuiSettings(ttk.Toplevel):
         frm_navigation.pack(expand=True, fill="x", pady=5, padx=5)
         frm_settings.pack(expand=True, fill="both", padx=15)
         # key binding
-        self.bind('<Control-s>', lambda event:self.callback_save_settings())
-        self.bind('<Escape>', lambda event:self._close_settings())
+        self.bind(SHORT_SAVE_SETTINGS, lambda event:self.callback_save_settings())
+        self.bind(SHORT_CLOSE_SETTINGS, lambda event:self._close_settings())
 
 
     def callback_save_settings(self):
