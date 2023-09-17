@@ -5,6 +5,12 @@ from threading import Timer
 
 DEFAULT_TARGET_POS = (0, 500)
 
+SHORT_TOGGLE_ACTIVE = '<space>'
+SHORT_SHOW_SETTINGS = '<Control-o>'
+SHORT_EXIT = '<Control-q>'
+SHORT_SAVE_SETTINGS = '<Control-s>'
+SHORT_CLOSE_SETTINGS = '<Escape>'
+
 def disable_event():
     """Empty function used to disable windows close x button"""
     pass
